@@ -16,9 +16,6 @@ require_once("get.php");
     <link rel="shortcut icon" href="pic/favicon.png">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
 
-    <script type="text/javascript" src="js/jquery.js"></script>
-    <script type="text/javascript" src="js/longpoll.js"></script>
-
     <style type="text/css">
 
         body {
@@ -126,13 +123,17 @@ require_once("get.php");
         .debug {
 
         }
-
+        a.clock {
+            display: block;
+            width: 24px;
+            height: 24px;
+        }
+        .clock {background-image: url(data:image/png;base64,<?php echo base64_encode(file_get_contents("pic/clock.png")) ?>);}}
     </style>
 
+    <script type="text/javascript" src="js/longpoll.js"></script>
     <script src="js/jquery.js"></script>
-    <script src="MessageBoard.js"></script>
-    <script src="js/script.js"></script>
-    <script src="Message.js"></script>
+    <script src="messages.js"></script>
 
     <title>Messy Labbage</title>
 </head>
