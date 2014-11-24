@@ -127,8 +127,6 @@ require_once("get.php");
         .clock {background-image: url(data:image/png;base64,<?php echo base64_encode(file_get_contents("pic/clock.png")) ?>);}}
     </style>
 
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="js/scripts.js"></script>
 
 
     <title>Messy Labbage</title>
@@ -155,6 +153,7 @@ require_once("get.php");
 </div>
 
 <!-- This script is running to get the messages -->
+<script src="js/scripts.js"></script>
 <script>
     $(document).ready(function () {
         MessageBoard.getMessages();
