@@ -52,10 +52,6 @@ require_once("get.php");
             color: Gray;
         }
 
-        html {
-            background: url(pic/b.jpg);
-        }
-
         .message {
             width: 590px;
             background-color: #CDEB8B;
@@ -131,9 +127,8 @@ require_once("get.php");
         .clock {background-image: url(data:image/png;base64,<?php echo base64_encode(file_get_contents("pic/clock.png")) ?>);}}
     </style>
 
-    <script type="text/javascript" src="js/longpoll.js"></script>
-    <script src="js/jquery.js"></script>
-    <script src="messages.js"></script>
+    <script src="js/scripts.js"></script>
+
 
     <title>Messy Labbage</title>
 </head>
@@ -164,6 +159,5 @@ require_once("get.php");
         MessageBoard.getMessages();
     });
 </script>
-<script src="js/bootstrap.js"></script>
 </body>
 </html>
