@@ -14,7 +14,8 @@ require_once("get.php");
     <link rel="apple-touch-icon" sizes="120x120" href="touch-icon-iphone-retina.png">
     <link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad-retina.png">
     <link rel="shortcut icon" href="pic/favicon.png">
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
 
     <style type="text/css">
 
@@ -154,6 +155,8 @@ require_once("get.php");
 <!-- This script is running to get the messages -->
 
 <script src="js/scripts.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 <script>
     $(document).ready(function () {
         MessageBoard.getMessages();
