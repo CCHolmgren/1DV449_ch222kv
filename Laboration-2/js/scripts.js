@@ -197,4 +197,4 @@ var MessageBoard = {
     }
 }
 
-window.onload = MessageBoard.init;
+//window.onload = MessageBoard.init;

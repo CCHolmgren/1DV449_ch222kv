@@ -152,13 +152,14 @@ require_once("get.php");
 
 </div>
 
-<!-- This script is running to get the messages -->
 
 <script src="js/scripts.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<!-- This script is running to get the messages -->
 <script>
     $(document).ready(function () {
+        MessageBoard.init();
         MessageBoard.getMessages();
     });
 </script>
