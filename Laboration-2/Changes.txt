@@ -32,10 +32,6 @@ Security:
 14. No CSRF protection what so ever.
 15. Adding messages is as easy as doing a get to an url with the parameters name and message. The username is not verified in anyway and it should be a post since it posts data to be added to the db
     Changed it to a POST instead of a GET. This breaks one of the requirements, but fuck it. You should never submit data in a GET request that gets stored. GET requests are cacheable.
-16. Why does mess.php need to be a php file? It includes the get.php file, but why does it need to be there, since it doesn't use it? It also looks a lot like index.html which doesn't make much sense.
-
-17. Why is the login page named index.php? Why not login or something like that?
-
 
 Speed:
 1. Shouldn't really just use fetchAll() since it will give you both an associate array and an numbered array. This makes no sense, so we give only the associate array.

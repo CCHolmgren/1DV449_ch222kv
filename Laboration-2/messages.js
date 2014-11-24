@@ -1,3 +1,35 @@
+function Message(message, date) {
+
+    this.getText = function () {
+        return message;
+    }
+
+    this.setText = function (_text) {
+        message = text;
+    }
+
+    this.getDate = function () {
+        return date;
+    }
+
+    this.setDate = function (_date) {
+        date = date;
+    }
+
+}
+
+Message.prototype.toString = function () {
+    return this.getText() + " (" + this.getDate() + ")";
+}
+
+Message.prototype.getHTMLText = function () {
+
+    return this.getText().replace(/[\n\r]/g, "<br />");
+}
+
+Message.prototype.getDateText = function () {
+    return this.getDate().toLocaleTimeString();
+}
 var MessageBoard = {
 
     messages: [],
@@ -82,12 +114,12 @@ var MessageBoard = {
         }).done(function (data) {
             alert(data);
             $("#messagearea").prepend('<div class="message">' +
-                '<a href="#" class="clock">' +
-                     +
+            '<a href="#" class="clock">' +
+            +
                 '</a>' +
-                '<p>'+MessageBoard.nameField.value+' said:<br>'+MessageBoard.textField.value+'</p>' +
-                '<span>13:41:01</span>' +
-                '<span class="clear"></span>' +
+            '<p>'+MessageBoard.nameField.value+' said:<br>'+MessageBoard.textField.value+'</p>' +
+            '<span>13:41:01</span>' +
+            '<span class="clear"></span>' +
             '</div>');
             alert("Your message is saved! Reload the page for watching it");
         });
