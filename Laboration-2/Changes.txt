@@ -1,0 +1,41 @@
+Security:
+1. SQL Injections.
+    Changed to prepared statements in the post.php file. As such, no SQL injections can slip through there.
+
+2. Sometimes it uses echo and return and sometimes it uses die() to alert the ajax of if it worked or not.
+    This really should just be returns I guess, since it json_encodes the data and the client can catch that instead of getting some odd mix of both json and just data.
+
+3. Has code that doesn't work, catching PDOEceptions for example, this will allow faulty things to slip through.
+    Seems to be no more left
+4. A lot of repeated code that surely has a fault somewhere, since this is a laboration task.
+    Moved the database connection to a Database file that handles that stuff, string dependencies and such removed. Still a lot of repeated code, should maybe move the stuff out to a separate class?
+5. Uses some odd fetchAll function when you return just a single value, or a single user, what.
+
+6. XSS
+    Avoided by using htmlspecialchars
+7. Session.cookie_lifetime should be set to 0, and the sec_session_start is bad.
+    Set that to better defaults. We do not want to save the cookie for more than the session length since that would mean that someone can come and steal it easily.
+8. Uses a database that allows you to add more users with the same username
+
+9. Uses the username to validate that the user is correct, and not the password, and as such allows you to login with just a username
+    Uses password now. Wont work with the current users though. Bummer
+10. You shouldn't really use sha512 for passwords, bcrypt or something is way better. Use password_hash instead of hash("sha512") to hash passwords
+    Uses password_hash and password_verify
+11. It uses addition instead of string concatenation, which means that just "123456" is hashed every time. This makes it so you can always login with any username.
+    Now it doesn't.
+11. Uses session_end(), which isn't a function, to log the user out. Use session_destroy() and setcookie(session_name(), "", time() -3600), to destroy and log out the user, or something equivalent.
+    Now there is a session_end function defined.
+12. The passwords are stored as plaintext
+    Now they aren't
+13. post.php is one hell of a mess.
+    Worked on it a bit. Resolved the PDOEception problem, resolved some injection problems and added a more consistent return/echo schema, but it is really bad as well. Should change to just a return statement.
+14. No CSRF protection what so ever.
+15. Adding messages is as easy as doing a get to an url with the parameters name and message. The username is not verified in anyway and it should be a post since it posts data to be added to the db
+    Changed it to a POST instead of a GET. This breaks one of the requirements, but fuck it. You should never submit data in a GET request that gets stored. GET requests are cacheable.
+16. Why does mess.php need to be a php file? It includes the get.php file, but why does it need to be there, since it doesn't use it? It also looks a lot like index.html which doesn't make much sense.
+
+17. Why is the login page named index.php? Why not login or something like that?
+
+
+Speed:
+1. Shouldn't really just use fetchAll() since it will give you both an associate array and an numbered array. This makes no sense, so we give only the associate array.
