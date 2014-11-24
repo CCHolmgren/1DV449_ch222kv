@@ -38,7 +38,7 @@ function addToDB($message, $user) {
         if (!$sth->execute(array(htmlspecialchars($message), htmlspecialchars($user)))) {
         }
     } catch (PDOException $e) {
-        echo "Error adding the message";
+        echo "Error adding the message: " . $e->getMessage();
 
         return false;
     }
