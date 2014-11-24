@@ -34,6 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		header("Location: test/debug.php");
     }*/
         elseif ($_GET['function'] == 'getMessages') {
+            //header('Content-type: application/json');
             echo(json_encode(getMessages()));
         }
     }

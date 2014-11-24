@@ -1,6 +1,5 @@
 <?php
 require_once("get.php");
-echo phpinfo();
 ?>
 <!DOCTYPE html>
 <html lang="sv">

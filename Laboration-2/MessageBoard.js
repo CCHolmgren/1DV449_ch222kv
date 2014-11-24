@@ -40,12 +40,13 @@ var MessageBoard = {
     getMessages: function () {
         console.log("INNE");
         $.ajax({
+            dataType:"json",
             type: "GET",
             url: "functions.php",
             data: {function: "getMessages"}
         }).done(function (data) { // called when the AJAX call is ready
 
-            data = JSON.parse(data);
+            //data = JSON.parse(data);
 
 
             for (var mess in data) {
