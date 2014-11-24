@@ -128,7 +128,6 @@ require_once("get.php");
     </style>
 
 
-
     <title>Messy Labbage</title>
 </head>
 
@@ -153,7 +152,8 @@ require_once("get.php");
 </div>
 
 <!-- This script is running to get the messages -->
-<script src="js/scripts.js"></script>
+
+<script src="js/scripts.min.js"></script>
 <script>
     $(document).ready(function () {
         MessageBoard.getMessages();
