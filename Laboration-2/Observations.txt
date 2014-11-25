@@ -1,0 +1,125 @@
+11 requests
+mess.php
+bootstrap
+jquery
+longpoll
+messageboard
+script
+message
+bootstrap
+b
+logo
+functions.php
+
+714 kb transferred
+811 ms load
+
+Using hard reload
+1.06 load 
+612ms
+1.46
+649
+993
+1.07
+
+Observation: The messages does not load
+
+9 requests
+650 kb transfered
+913
+795
+1.42
+689
+769
+737
+
+6 requests
+612 kb transfered
+684
+582
+638
+818
+591
+592
+1.07
+754
+975
+
+Observation: scripts.js takes 938 seconds to load off cache. Minify maybe?
+
+7 requests
+343 kb transferred
+903
+571
+525
+488
+573
+600
+529
+481
+1.19
+
+
+6 requests
+612 kb
+692
+704
+612
+725
+605
+678
+669
+550
+Observation: Loads the content faster because the scripts are added to the end of the html.
+
+
+Now it is minified
+6 requests
+296 kb
+476
+
+CDN - minified
+8 requests
+122 kb transferred
+701 ms
+436
+397
+662
+395
+393
+399
+
+
+gzip on
+8 requests 
+122 kb
+540
+578
+1.01
+
+
+changed to google cdn
+7 requests
+116 kb
+400
+409
+379
+358
+478
+494
+392
+
+Observations: Way better times now with google cdn instead of maxcdn for the jquery.min.js file
+
+Using some hints from google page speed
+8 requests
+113 kb transfered
+783
+454
+383
+319
+348
+392
+519
+
+Observation: The load and DOMContentLoaded times are way lower than the actual full time of the page, since it loads the bootstrap min css file async after the page is loaded. This is better for page speed since it doesnt block the page at all, even though the css file is quite small at 23.8 kb. 
