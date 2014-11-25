@@ -32,6 +32,7 @@ function addToDB($message, $user) {
         return false;
     }
 
+    $db = Database::getDBConnection();
     try {
         $sth = $db->prepare("INSERT INTO messages (message, name) VALUES(?, ?);");
 

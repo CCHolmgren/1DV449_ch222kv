@@ -15,7 +15,7 @@ require_once("get.php");
     <link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad-retina.png">
     <link rel="shortcut icon" href="pic/favicon.png">
     <!--<link rel="stylesheet" type="text/css" href="css/bootstrap.css"/>-->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
 
     <style type="text/css">
 
@@ -162,6 +162,17 @@ require_once("get.php");
         MessageBoard.init();
         MessageBoard.getMessages();
     });
+</script>
+<script>
+    var cb = function() {
+        var l = document.createElement('link'); l.rel = 'stylesheet';
+        l.href = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css';
+        var h = document.getElementsByTagName('head')[0]; h.parentNode.insertBefore(l, h);
+    };
+    var raf = requestAnimationFrame || mozRequestAnimationFrame ||
+        webkitRequestAnimationFrame || msRequestAnimationFrame;
+    if (raf) raf(cb);
+    else window.addEventListener('load', cb);
 </script>
 </body>
 </html>
