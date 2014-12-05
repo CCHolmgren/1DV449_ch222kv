@@ -1,0 +1,92 @@
+
+Disabled cache: 12 requests 720 kb transferred 362 load time
+Disabled cache: 12 requests 720 kb transferred 381 load time
+429
+345 
+354
+350
+344
+361
+342
+346
+363
+
+Observations: It loads the javascript files all at the same time. jquery and longpoll takes the most time. 
+
+12 requests 7.2kb transferred 299 ms load time
+344
+336
+321
+334
+329
+330
+329
+325
+319
+322
+324
+
+Observations: With the cache it takes a lot less time to load the javascript files, but the longpoll.js file takes a lot of time without reason really.
+
+Thing #1:
+Fewer requests.
+The javascript files can be made into one.
+b.jpg, logo.png and clock.png can be made into one.
+And while we are at it, script and bootstrap.js is the same, so remove one of them.
+
+Remove b.jpg, it doesn't display. I think that is allowed.
+
+files left:
+mess.php
+bootstrap.css
+scripts.js
+logo.png
+data:image/png
+functions.php
+
+6 requests 633kb 391 ms
+384
+335
+328
+298
+366
+303
+312
+323
+327
+339
+350
+
+Using CDN:
+It will improve when we are talking to several users, when we use cache and so on. But at this time, it doesnt since it would take longer time to load stuff from another site, and there would be another request.
+
+Expires header
+
+Gzip
+Apache doesn't seem to want to compress them
+
+Stylesheets at the top
+They are already at the top
+
+Scripts at the bottom
+6 requests 628kb transferred
+385
+361
+351
+390
+326
+338
+326
+338
+
+Minify
+299 kb transferred
+352 ms
+342
+304
+326
+311
+328
+314
+335
+330

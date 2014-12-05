@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Whatnow</title>
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+			padding: 0;
+		}
+		#map-canvas {
+			height: 100%;
+			float: left;
+			width: 75%;
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD44ErNisonZOR7gDzNh9FtB3jOBBjr36w">
+	</script>
+
+	<script>
+		var map;
+		var markers = [];
+		var infowindows = [];
+		var animationTime = 1400; //ms
+		var times = 0;
+
+		function initialize() {
+			var myLatlng = new google.maps.LatLng(60.726633, 15.730817);
+			var mapOptions = {
+				zoom: 5,
+				center: myLatlng
+			};
+			console.log("inside initialize");
+			map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+		}
+		google.maps.event.addDomListener(window, "load", initialize);
+		function getMessages(){
+			$.ajax({
+				method: "GET",
+				cache: true,
+				url: "http://127.0.0.1:3000/messages/messages.json",
+				timeout:50000,
+				async: true,
+				success: function(data, textStatus, jqXHR){
+					console.log(textStatus);
+					foo(data);
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+                	//alert("error" + textStatus + errorThrown);
+                	setTimeout(getMessages, 2000);
+            }
+			});
+		}
+		window.addEventListener("load", function(e){
+			getMessages();
+		});
+		function bounce(id){
+			markers.forEach(function(marker){
+				marker.setAnimation(null);
+				if(marker.id == id){
+					marker.setAnimation(google.maps.Animation.BOUNCE);
+					setTimeout(function(){
+						marker.setAnimation(null);
+					}, animationTime);
+					return;
+				}
+			});
+		}
+		function foo(arg){
+			console.log(new Date());
+			window.jsonpthing = arg;
+			var markerLength = markers.length;
+
+			arg.messages.forEach(function(message){
+				for(var i = 0; i < arg.messages.length; i++){
+					if(markers[i]){
+						if(markers[i].id == message.id){
+							return;
+						}
+					}
+				}
+				var marker = new google.maps.Marker({
+					position: new google.maps.LatLng(message.latitude, message.longitude),
+					map: map,
+					title: message.title,
+					id: message.id,
+				});
+				console.log("adding", marker);
+				markers.push(marker);
+				var infowindow = new google.maps.InfoWindow({
+					content: message.description
+				});
+				infowindows.push(infowindow);
+				google.maps.event.addListener(marker, "click", function(){
+					infowindows.forEach(function(inwo){
+						inwo.close();
+					});
+					infowindow.open(map, marker);
+				});
+			});
+			if(markerLength == markers.length){
+				return;
+			}
+			populateMapMarkers();
+			$(".marker").on("click", function(thing){
+				console.log(thing);
+				bounce(thing.target.dataset.id);
+			});
+		}
+		function populateMapMarkers(){
+			markers.forEach(function(marker){
+				$("#map-markers").append("<div class='marker' data-id='" + marker.id + "'>" + marker.title + "</div>");
+			});
+		}
+	</script>
+
+	<body>
+		<div id="map-canvas"></div>
+		<div id="map-markers">
+		</div>
+	</body>
+	</html>
