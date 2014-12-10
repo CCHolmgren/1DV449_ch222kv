@@ -26,7 +26,10 @@ setInterval(function(){
 }, 20000);
 
 app.use(morgan("tiny"));
-app.use("/messages",serveStatic("messages"));
+app.use("/messages",serveStatic("messages", {'setHeaders': function(res, path){
+	res.setHeader('Cache-Control', "public; max-age=1000");
+}
+}));
 
 /*app.get("/messages/:filename", function(req, res){
 	res.setHeader("Content-Type", "application/json; charset=utf-8");
