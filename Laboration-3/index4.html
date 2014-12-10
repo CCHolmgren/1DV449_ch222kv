@@ -9,13 +9,29 @@
 			padding: 0;
 		}
 		#map-canvas {
-			height: 100%;
+			position: relative;
+			height: 95%;
 			float: left;
 			width: 75%;
 			margin: 0;
 			padding: 0;
 		}
-	</style>
+		.infowindow {
+			min-height: 130px;
+			height: auto;
+		}
+		.title {
+			font-weight: bold;
+		}
+		.content {
+			float:left;
+			margin-left: 16px;
+		}
+		.wrapper {
+			height: 100%;
+			margin: 16px;
+		}
+	</style>	
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD44ErNisonZOR7gDzNh9FtB3jOBBjr36w">
 	</script>
@@ -24,102 +40,197 @@
 		var map;
 		var markers = [];
 		var infowindows = [];
-		var animationTime = 1400; //ms
-		var times = 0;
+	var animationTime = 1400; //ms
+	var times = 0;
 
-		function initialize() {
-			var myLatlng = new google.maps.LatLng(60.726633, 15.730817);
-			var mapOptions = {
-				zoom: 5,
-				center: myLatlng
-			};
-			console.log("inside initialize");
-			map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-		}
-		google.maps.event.addDomListener(window, "load", initialize);
-		function getMessages(){
-			$.ajax({
-				method: "GET",
-				cache: true,
-				url: "http://127.0.0.1:3000/messages/messages.json",
-				timeout:50000,
-				async: true,
-				success: function(data, textStatus, jqXHR){
-					console.log(textStatus);
-					foo(data);
-				},
-				error: function(jqXHR, textStatus, errorThrown){
-                	//alert("error" + textStatus + errorThrown);
-                	setTimeout(getMessages, 2000);
-            }
-			});
-		}
-		window.addEventListener("load", function(e){
-			getMessages();
+	function initialize() {
+		var myLatlng = new google.maps.LatLng(60.726633, 15.730817);
+		var mapOptions = {
+			zoom: 5,
+			center: myLatlng
+		};
+		console.log("inside datenitialize");
+		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+	}
+	google.maps.event.addDomListener(window, "load", initialize);
+	function getMessages(){
+		$.ajax({
+			method: "GET",
+			cache: true,
+			url: "http://127.0.0.1:3000/messages/messages.json",
+			timeout:50000,
+			async: true,
+			success: function(data, textStatus, jqXHR){
+				handleData(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown){
+				setTimeout(getMessages, 2000);
+			}
 		});
-		function bounce(id){
-			markers.forEach(function(marker){
-				marker.setAnimation(null);
-				if(marker.id == id){
-					marker.setAnimation(google.maps.Animation.BOUNCE);
-					setTimeout(function(){
-						marker.setAnimation(null);
-					}, animationTime);
-					return;
-				}
-			});
-		}
-		function foo(arg){
-			console.log(new Date());
-			window.jsonpthing = arg;
-			var markerLength = markers.length;
-
-			arg.messages.forEach(function(message){
-				for(var i = 0; i < arg.messages.length; i++){
-					if(markers[i]){
-						if(markers[i].id == message.id){
-							return;
-						}
-					}
-				}
-				var marker = new google.maps.Marker({
-					position: new google.maps.LatLng(message.latitude, message.longitude),
-					map: map,
-					title: message.title,
-					id: message.id,
-				});
-				console.log("adding", marker);
-				markers.push(marker);
-				var infowindow = new google.maps.InfoWindow({
-					content: message.description
-				});
-				infowindows.push(infowindow);
-				google.maps.event.addListener(marker, "click", function(){
-					infowindows.forEach(function(inwo){
-						inwo.close();
-					});
-					infowindow.open(map, marker);
-				});
-			});
-			if(markerLength == markers.length){
+	}
+	window.addEventListener("load", function(e){
+		getMessages();
+		$("#categories").on("change", function(e){
+			console.log(e);
+			console.log(e.target);
+			updateMap(e.target.value);
+		});	
+	});
+	
+	function bounce(id){
+		markers.forEach(function(marker){
+			marker.setAnimation(null);
+			if(marker.id == id){
+				marker.setAnimation(google.maps.Animation.BOUNCE);
+				setTimeout(function(){
+					marker.setAnimation(null);
+				}, animationTime);
 				return;
 			}
-			populateMapMarkers();
-			$(".marker").on("click", function(thing){
-				console.log(thing);
-				bounce(thing.target.dataset.id);
-			});
+		});
+	}
+	function existsAlready(previousMarkers, messageId, checkLength){
+		for(var i = 0; i < checkLength; i++){
+			if(previousMarkers[i]){
+				if(previousMarkers[i].id == messageId){
+					return true;
+				}
+			}
 		}
-		function populateMapMarkers(){
-			markers.forEach(function(marker){
-				$("#map-markers").append("<div class='marker' data-id='" + marker.id + "'>" + marker.title + "</div>");
-			});
-		}
-	</script>
+		return false;
+	}
+	function updateMap(category){
+		var category = category || "all";
 
-	<body>
+		var categories1 = {"road": "0", "public": "1", planned: "2", other:"3"};
+
+		markers.forEach(function(marker){
+			console.log(marker.message.category);
+
+			if(categories1[category] == marker.message.category || category == "all"){
+				marker.setMap(map);
+			} else {
+				marker.setMap(null);
+				$("#map-markers").empty();
+			}
+		});
+
+		populateMapMarkers(category);
+
+		addBounceClickListener();
+	}
+	function handleData(date){
+		window.cachedMessages = date;
+		var categories = ["Vägarbete", "Kollektivtrafik", "Planerad störning", "Övrigt"];
+		var markerLength = markers.length;
+
+		date.messages.forEach(function(message){
+			//If we already added this message, just return and do nothing more
+			if(existsAlready(markers, message.id, date.messages.length))
+			{
+				return;
+			}
+			console.log(message);
+			var marker = new google.maps.Marker({
+				position: new google.maps.LatLng(message.latitude, message.longitude),
+				map: map,
+				title: message.title,
+				id: message.id,
+				message: message
+			});
+
+			markers.push(marker);
+
+			var infowindow = new google.maps.InfoWindow({
+				content: "<div class='infowindow'><div class='title'>"+message.title+"i kategori " + message.subcategory + "</div><div class='time'>" + new Date(Math.floor(message.createddate.slice(6,message.createddate.length-7))) + "</div><div class='message-content'>" + message.description + "</div></div>",
+				opened: false
+			});
+
+			infowindows.push(infowindow);
+			google.maps.event.addListener(marker, "click", function(){
+
+				console.log(infowindow);
+				//Close the windows first, no two windows open at a time
+				infowindows.forEach(function(inwo){
+					if(inwo !== infowindow){
+						inwo.close();
+						inwo.opened = false;	
+					}
+				});
+
+				if(infowindow.opened == true){
+					console.log("Closing the infowindow", infowindow);
+					infowindow.close();
+					infowindow.opened = false;
+					//Then open this one window, yay for closures
+				} else {
+					console.log("Opening the infowindow", infowindow);
+					infowindow.opened = true;
+					infowindow.open(map, marker);
+				}
+				
+				console.log(infowindow);
+				
+			});
+		});
+		//If the length is the same as it was before, we did not add any markers
+		if(markerLength == markers.length){
+			return;
+		}
+
+		populateMapMarkers();
+
+		//Add the eventlisteners, so that it bounces if we click on it
+		addBounceClickListener();
+	}
+	function addBounceClickListener(){
+		$(".marker").on("click", function(thing){
+			console.log("Inside bounceclicklistener");
+			bounce(thing.target.dataset.id);
+		});
+	}
+	function populateMapMarkers(category){
+		category = category || "all";
+		$("#map-markers").empty();
+		var categories1 = {"road": "Vägarbete", "public": "Kollektivtrafik", planned: "Planerad störning", other:"Övrigt"};
+		markers.forEach(function(marker){
+			if(categories1[category] == marker.message.subcategory || category == "all"){
+				var d = new Date(Math.floor(marker.message.createddate.slice(6,marker.message.createddate.length-7))),
+
+				message_date = d.getDate(), 
+				message_month = d.getMonth() + 1,
+				message_year = d.getFullYear(),
+				message_hour = ((d.getHours() + "").length == 2 ? d.getHours() : "0" + d.getHours() ),
+				message_minute = ((d.getMinutes()+ "").length  == 2 ? d.getMinutes() : "0" + d.getMinutes()),
+				message_seconds = ((d.getSeconds()+"").length == 2 ? d.getSeconds(): "0"+d.getSeconds()),
+
+				dateString = message_year + "-" + message_month + "-" + message_date + " " + message_hour + ":" + message_minute + ":" + message_seconds; 
+
+				$("#map-markers").prepend("<div class='marker' data-id='" + marker.id + "'>" + marker.title + " " + dateString +  "</div>");
+			}
+		});
+	}
+</script>
+
+<body>
+	<div class="wrapper">
+
 		<div id="map-canvas"></div>
-		<div id="map-markers">
+		<div class="content">
+			<div>
+				<span>Filtrering</span>
+				<small>Tillåter dig att enbart visa en kategori i taget</small>
+			</div>
+			<select id="categories">
+
+				<option value="all">Alla</option>
+				<option value="road">Vägtrafik</option>
+				<option value="public">Kollektivtrafik</option>
+				<option value="planned">Planerad störning</option>
+				<option value="other">Övrigt</option>
+			</select>
+			<div id="map-markers" class="space"></div>
 		</div>
-	</body>
-	</html>
+	</div>
+</body>
+</html>

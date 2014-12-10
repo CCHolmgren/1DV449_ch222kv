@@ -1,9 +1,10 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var request = require("request");
-var fs = require("fs");
-var serveStatic = require("serve-static");
-var url = require("url");
+var app = require('express')(),
+	http = require('http').Server(app),
+	request = require("request"),
+	fs = require("fs"),
+	serveStatic = require("serve-static"),
+	url = require("url"),
+	morgan = require("morgan");
 
 /*app.use("/messages",serveStatic("messages", {"setHeaders": 
 	function(res, path, stat){
@@ -24,12 +25,16 @@ setInterval(function(){
 	reloadFile();
 }, 20000);
 
-app.get("/messages/:filename", function(req, res){
+app.use(morgan("tiny"));
+app.use("/messages",serveStatic("messages"));
+
+/*app.get("/messages/:filename", function(req, res){
 	res.setHeader("Content-Type", "application/json; charset=utf-8");
 	res.setHeader("Cache-Control", "public; max-age=100");
 	console.log(__dirname + "/messages/messages.json");
 	res.sendfile(__dirname + "/messages/messages.json");
-});
+});*/
+
 app.get('/', function(req, res){
 	res.sendfile(__dirname + '/index4.html');
 });
