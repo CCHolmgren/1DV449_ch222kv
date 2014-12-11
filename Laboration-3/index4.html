@@ -42,12 +42,34 @@
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD44ErNisonZOR7gDzNh9FtB3jOBBjr36w">
 	</script>
 
+<body>
+	<div class="wrapper">
+
+		<div id="map-canvas"></div>
+		<div class="content">
+			<div>
+				<span>Filtrering</span>
+				<small>Tillåter dig att enbart visa en kategori i taget</small>
+			</div>
+			<select id="categories">
+
+				<option value="all">Alla</option>
+				<option value="road">Vägtrafik</option>
+				<option value="public">Kollektivtrafik</option>
+				<option value="planned">Planerad störning</option>
+				<option value="other">Övrigt</option>
+			</select>
+			<div id="map-markers" class="space"></div>
+		</div>
+	</div>
 	<script>
-		var map;
-		var markers = [];
-		var infowindows = [];
+	var map;
+	var markers = [];
+	var infowindows = [];
 	var animationTime = 1400; //ms
 	var times = 0;
+	var categories1 = {"road": "0", "public": "1", planned: "2", other:"3"};
+	var map_markers = $("#map-markers");
 
 	function initialize() {
 		var myLatlng = new google.maps.LatLng(60.726633, 15.730817);
@@ -59,11 +81,12 @@
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 	}
 	google.maps.event.addDomListener(window, "load", initialize);
+
 	function getMessages(){
 		$.ajax({
 			method: "GET",
 			cache: true,
-			url: "http://127.0.0.1:3000/messages/messages.json",
+			url: "/messages/messages.json",
 			timeout:50000,
 			async: true,
 			success: function(data, textStatus, jqXHR){
@@ -74,11 +97,10 @@
 			}
 		});
 	}
+
 	window.addEventListener("load", function(e){
 		getMessages();
 		$("#categories").on("change", function(e){
-			console.log(e);
-			console.log(e.target);
 			updateMap(e.target.value);
 		});	
 	});
@@ -86,8 +108,10 @@
 	function bounce(id){
 		markers.forEach(function(marker){
 			marker.setAnimation(null);
+
 			if(marker.id == id){
 				marker.setAnimation(google.maps.Animation.BOUNCE);
+				//Remove the animation after animationTime, since the bounce animation never ends
 				setTimeout(function(){
 					marker.setAnimation(null);
 				}, animationTime);
@@ -108,8 +132,6 @@
 	function updateMap(category){
 		var category = category || "all";
 
-		var categories1 = {"road": "0", "public": "1", planned: "2", other:"3"};
-
 		markers.forEach(function(marker){
 			console.log(marker.message.category);
 
@@ -117,9 +139,11 @@
 				marker.setMap(map);
 			} else {
 				marker.setMap(null);
-				$("#map-markers").empty();
+				
 			}
 		});
+
+		map_markers.empty();
 
 		populateMapMarkers(category);
 
@@ -127,7 +151,6 @@
 	}
 	function handleData(date){
 		window.cachedMessages = date;
-		var categories = ["Vägarbete", "Kollektivtrafik", "Planerad störning", "Övrigt"];
 		var markerLength = markers.length;
 
 		date.messages.forEach(function(message){
@@ -136,7 +159,6 @@
 			{
 				return;
 			}
-			console.log(message);
 			var marker = new google.maps.Marker({
 				position: new google.maps.LatLng(message.latitude, message.longitude),
 				map: map,
@@ -148,7 +170,7 @@
 			markers.push(marker);
 
 			var infowindow = new google.maps.InfoWindow({
-				content: "<div class='infowindow'><div class='title'>"+message.title+"i kategori " + message.subcategory + "</div><div class='time'>" + new Date(Math.floor(message.createddate.slice(6,message.createddate.length-7))) + "</div><div class='message-content'>" + message.description + "</div></div>",
+				content: "<div class='infowindow'><div class='title'>"+message.title+" i kategori " + message.subcategory + "</div><div class='time'>" + new Date(Math.floor(message.createddate.slice(6,message.createddate.length-7))) + "</div><div class='message-content'>" + message.description + "</div></div>",
 				opened: false
 			});
 
@@ -191,52 +213,31 @@
 	}
 	function addBounceClickListener(){
 		$(".marker").on("click", function(thing){
-			console.log("Inside bounceclicklistener");
 			bounce(thing.target.dataset.id);
 		});
 	}
 	function populateMapMarkers(category){
 		category = category || "all";
-		$("#map-markers").empty();
-		var categories1 = {"road": "Vägarbete", "public": "Kollektivtrafik", planned: "Planerad störning", other:"Övrigt"};
+
+		map_markers.empty();
+
 		markers.forEach(function(marker){
-			if(categories1[category] == marker.message.subcategory || category == "all"){
+			if(categories1[category] == marker.message.category || category == "all"){
 				var d = new Date(Math.floor(marker.message.createddate.slice(6,marker.message.createddate.length-7))),
 
-				message_date = d.getDate(), 
-				message_month = d.getMonth() + 1,
-				message_year = d.getFullYear(),
-				message_hour = ((d.getHours() + "").length == 2 ? d.getHours() : "0" + d.getHours() ),
-				message_minute = ((d.getMinutes()+ "").length  == 2 ? d.getMinutes() : "0" + d.getMinutes()),
-				message_seconds = ((d.getSeconds()+"").length == 2 ? d.getSeconds(): "0"+d.getSeconds()),
+					message_date = d.getDate(), 
+					message_month = d.getMonth() + 1,
+					message_year = d.getFullYear(),
+					message_hour = ((d.getHours() + "").length == 2 ? d.getHours() : "0" + d.getHours() ),
+					message_minute = ((d.getMinutes()+ "").length  == 2 ? d.getMinutes() : "0" + d.getMinutes()),
+					message_seconds = ((d.getSeconds()+"").length == 2 ? d.getSeconds(): "0"+d.getSeconds()),
 
-				dateString = message_year + "-" + message_month + "-" + message_date + " " + message_hour + ":" + message_minute + ":" + message_seconds; 
+					dateString = message_year + "-" + message_month + "-" + message_date + " " + message_hour + ":" + message_minute + ":" + message_seconds; 
 
 				$("#map-markers").prepend("<div class='marker' data-id='" + marker.id + "'>" + marker.title + " " + dateString +  "</div>");
 			}
 		});
 	}
 </script>
-
-<body>
-	<div class="wrapper">
-
-		<div id="map-canvas"></div>
-		<div class="content">
-			<div>
-				<span>Filtrering</span>
-				<small>Tillåter dig att enbart visa en kategori i taget</small>
-			</div>
-			<select id="categories">
-
-				<option value="all">Alla</option>
-				<option value="road">Vägtrafik</option>
-				<option value="public">Kollektivtrafik</option>
-				<option value="planned">Planerad störning</option>
-				<option value="other">Övrigt</option>
-			</select>
-			<div id="map-markers" class="space"></div>
-		</div>
-	</div>
 </body>
 </html>

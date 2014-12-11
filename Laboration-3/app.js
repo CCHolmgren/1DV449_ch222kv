@@ -1,9 +1,7 @@
 var app = require('express')(),
-	http = require('http').Server(app),
 	request = require("request"),
 	fs = require("fs"),
 	serveStatic = require("serve-static"),
-	url = require("url"),
 	morgan = require("morgan");
 
 /*app.use("/messages",serveStatic("messages", {"setHeaders": 
@@ -12,7 +10,7 @@ var app = require('express')(),
 		res.setHeader("Cache-Control", "public; max-age=100");
 	}
 }));*/
-function reloadFile(){
+function reloadMessages(){
 	request("http://api.sr.se/api/v2/traffic/messages?format=json").pipe(fs.createWriteStream(__dirname + "/messages/messages.json", "utf8"));	
 	fs.writeFile(__dirname + "/messages/gottenwhen.txt", Date.now(), function(err){
 		if(err) throw err;
@@ -21,9 +19,10 @@ function reloadFile(){
 }
 /// Reload the file every 20 seconds
 ///Which means that the gottenwhen file will also be incremented
+console.log("Starting the interval to retrieve the messages again");
 setInterval(function(){
-	reloadFile();
-}, 20000);
+	reloadMessages();
+}, 30*1000);
 
 app.use(morgan("tiny"));
 app.use("/messages",serveStatic("messages", {'setHeaders': function(res, path){
