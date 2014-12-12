@@ -9,13 +9,20 @@ sec_session_start();
 */
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["function"]) && $_POST["function"] == "add") {
+        if(isset($_POST["csrf_token"]) && isset($_COOKIE["csrf_token"]) && $_POST["csrf_token"] == $_COOKIE["csrf_token"]){
         $name = $_POST["name"];
         $message = $_POST["message"];
-        if(addToDB($message, $name)){
-            echo "Successfully added the message.";
+            if(addToDB($message, $name)){
+                echo "Successfully added the message.";
+            }
+            else {
+                header("HTTP/1.1 400 Bad Request");
+            }
+
         }
         else {
             header("HTTP/1.1 400 Bad Request");
+            echo "You failed the CSRF check";
         }
         //header("Location: test/debug.php");
     }
@@ -35,7 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }*/
         elseif ($_GET['function'] == 'getMessages') {
             //header('Content-type: application/json');
-            echo(json_encode(getMessages()));
+            header("content-type:application/json");
+            echo(json_encode(getMessages($_GET["lastSeen"])));
         }
     }
 }

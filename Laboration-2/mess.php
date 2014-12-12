@@ -1,5 +1,7 @@
 <?php
 require_once("get.php");
+$csrf_token = mt_rand(1, 1000000000);
+setcookie("csrf_token", $csrf_token);
 ?>
 <!DOCTYPE html>
 <html lang="sv">
@@ -18,7 +20,6 @@ require_once("get.php");
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">-->
 
     <style type="text/css">
-
         body {
             margin: 0;
             padding: 0;
@@ -146,6 +147,7 @@ require_once("get.php");
         Message: <br/>
         <textarea name="mess" id="inputText" cols="55" rows="6"></textarea>
         <input class="btn btn-primary" type="button" id="buttonSend" value="Write your message"/>
+        <input type="hidden" value="<?php echo $csrf_token?>" id="csrf_token">
         <span class="clear">&nbsp;</span>
 
     </div>
@@ -153,7 +155,9 @@ require_once("get.php");
 </div>
 
 
-<script src="js/scripts.min.js"></script>
+<!--<script src="js/scripts.min.js"></script>-->
+<script src="Message.js"></script>
+<script src="MessageBoard.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 <!-- This script is running to get the messages -->
@@ -161,6 +165,7 @@ require_once("get.php");
     $(document).ready(function () {
         MessageBoard.init();
         MessageBoard.getMessages();
+        //setInterval(MessageBoard.getMessages, 1000);
     });
 </script>
 <script>
