@@ -2,7 +2,7 @@
 
 // get the specific message
 require_once "Database.php";
-function getMessages() {
+function getMessages($lastSeen = 0) {
     $db = null;
 
     try {
@@ -14,16 +14,21 @@ function getMessages() {
     }
 
     $result = null;
-    try {
-        $sth = $db->prepare("SELECT * FROM messages;");
-        $sth->execute();
-        $result = [];
-        $result = $sth->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        echo("Error creating query: " . $e->getMessage());
+    while(true){
+        try {
+            $sth = $db->prepare("SELECT * FROM messages WHERE serial > ?;");
+            $sth->execute(array($lastSeen));
+            $result = [];
+            $result = $sth->fetchAll(PDO::FETCH_ASSOC);
+            if($result){
+                return $result;
+            }
+            usleep(100000);
+            continue;
+        } catch (PDOException $e) {
+            echo("Error creating query: " . $e->getMessage());
 
-        return $result;
+            return $result;
+        }
     }
-
-    return $result;
 }

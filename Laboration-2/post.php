@@ -15,7 +15,7 @@ function addToDB($message, $user) {
         die("Something went wrong -> " . $e->getMessage());
     }
 
-    try {
+    /*try {
         $sth = $db->prepare("SELECT * FROM users WHERE username = ?;");
 
         $sth->execute(array($user));
@@ -30,7 +30,7 @@ function addToDB($message, $user) {
         echo("Error creating query: " . $e->getMessage());
 
         return false;
-    }
+    }*/
 
     $db = Database::getDBConnection();
     try {

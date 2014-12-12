@@ -35,3 +35,10 @@ Security:
 
 Speed:
 1. Shouldn't really just use fetchAll() since it will give you both an associate array and an numbered array. This makes no sense, so we give only the associate array.
+More things can be found in the observations.txt and observations_local.txt files
+
+Long polling:
+My implementation just starts an AJAX request to a route on the server which has a long timeout value. The server goes and checks if there is any new messages based on the value that the AJAX request provided.
+If new messages are found, return these. Otherwise it will sleep for some time and check again. This is an ugly way to do it, doing a check and sleeping is not optimal in any way.
+It would be much better to have a redis server that handles all the messages or use redis as a cache, since that would be much cheaper to check than to do a really simple sql query.
+If you are running this server behind a apache server then you will get problems quite quickly, since it leaves connections for a really long time. It would be better to run something like nginx or node.js.
